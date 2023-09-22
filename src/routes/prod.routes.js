@@ -4,9 +4,19 @@ import prodModel from '../models/prod.models.js'
 const prodRouter = Router()
 
 prodRouter.get('/', async (req,res) => {
-    const {limit} = req.body
+    const {limit, page, sort, query} = req.query;
     try{
-      const prods = await prodModel.find().limit(limit)
+      const prods = await prodModel.find()
+      if(limit != undefined){
+        const prods = await productModel.paginate({}, {limit, page, sort})
+        console.log(prods)
+        res.render('products', {prods})
+        res.status(200).send({resultado: 'OK', message: prods});
+    } else {
+        const prods = await productModel.paginate({}, {limit: 10, page, sort})
+        res.render('products', {prods})
+        res.status(200).send({resultado: 'OK', message: prods});
+    }
       res.status(200).send({resultado:'OK' ,message: prods})
     }
     catch(error){
