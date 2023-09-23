@@ -4,23 +4,20 @@ import prodModel from '../models/prod.models.js'
 const prodRouter = Router()
 
 prodRouter.get('/', async (req,res) => {
-    const {limit, page, sort, query} = req.query;
     try{
+      const { page = 1, limit = 10 , sort, query } = req.query;
       const prods = await prodModel.find()
-      if(limit != undefined){
-        const prods = await productModel.paginate({}, {limit, page, sort})
-        console.log(prods)
-        res.render('products', {prods})
-        res.status(200).send({resultado: 'OK', message: prods});
-    } else {
-        const prods = await productModel.paginate({}, {limit: 10, page, sort})
-        res.render('products', {prods})
-        res.status(200).send({resultado: 'OK', message: prods});
-    }
-      res.status(200).send({resultado:'OK' ,message: prods})
-    }
+      const categoria = prods.find(i => i.category === query)
+
+if(prods){
+  const prod = await prodModel.paginate({}, {limit: limit, page, sort})
+  res.status(200).send(prod)
+if(query === "category"){
+  const prod = await prodModel.paginate({category : categoria}, {limit : limit, page, sort : sort ? { price: sort === 'asc' ? 1 : -1 } : undefined})
+  res.status(200).send({resultado: 'OK', message: prod})
+}}}
     catch(error){
-     res.status(400).send({error: `Error , producto no encontrado : ${error}`})
+      res.status(400).send({ error: 'no encontrado' })
     }
 })
 
